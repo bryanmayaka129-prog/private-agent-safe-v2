@@ -21,11 +21,24 @@ jobs:
           PROJECT_DIR="$GITHUB_WORKSPACE/extracted/PrivateAgent_GIC_Hardened_V2"
           test -f "$PROJECT_DIR/pubspec.yaml"
           echo "PROJECT_DIR=$PROJECT_DIR" >> "$GITHUB_ENV"
+      - name: Remove unused dependency
+        working-directory: extracted/PrivateAgent_GIC_Hardened_V2
+        shell: bash
+        run: |
+          set -euo pipefail
+          PUBSPEC="pubspec.yaml"
+          COUNT=$(grep -c '  share_plus: \^13.2.0' "$PUBSPEC" || true)
+          if [ "$COUNT" -ne 1 ]; then
+            echo "ERROR: Expected exactly 1 occurrence of '  share_plus: ^13.2.0' in pubspec.yaml, found $COUNT"
+            exit 1
+          fi
+          sed -i '/^  share_plus: \^13.2.0$/d' "$PUBSPEC"
+          echo "Removed unused share_plus dependency"
       - name: Set up Java 17
         uses: actions/setup-java@v4
         with:
           distribution: temurin
-          java-version: '17'
+          java-version: "17"
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
@@ -62,4 +75,4 @@ jobs:
           name: privateagent-gic-hardened-v2
           path: extracted/PrivateAgent_GIC_Hardened_V2/dist/*
           if-no-files-found: error
-          retention-days: 14
+        retention-days: 14
