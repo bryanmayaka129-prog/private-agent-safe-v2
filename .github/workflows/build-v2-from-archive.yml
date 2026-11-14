@@ -75,4 +75,4 @@ jobs:
           name: privateagent-gic-hardened-v2
           path: extracted/PrivateAgent_GIC_Hardened_V2/dist/*
           if-no-files-found: error
-        retention-days: 14
+          retention-days: 14
